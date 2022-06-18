@@ -7,21 +7,24 @@ int squareWidth;
 int w;
 int board[][];
 HashMap<Integer, Integer> tribeToColor;
-int newtribeNum = 0;
+int newTribeNum = 0;
 
 // General settings
 boolean spawnNewTribes;
 int numStartTribes;
 boolean useRandomDeaths;
+int buttonHeight;
 
 // Probabilities
-boolean useDefaultSettings;
 double chanceBirth;
 double chanceDeath;
 double chanceNewTribe;
 double chanceVirus;
 double chanceVirusDeath;
 double chanceVirusSpread;
+
+// ChangeValueButton objects
+ArrayList<Button> buttons;
 
 // Debug
 boolean onlyOneTribe;
@@ -38,10 +41,9 @@ void setup() {
     spawnNewTribes = true;
     numStartTribes = 8;
     useRandomDeaths = false;
+    buttonHeight = 25; // also decides font size
     
     // Probabilities
-    useDefaultSettings = true; // IMPORTANT SETTING - will override all probabilities
-    chanceBirth = 0.25;
     chanceDeath = 0.005;
     chanceNewTribe = 0.00001;
     
@@ -50,9 +52,9 @@ void setup() {
     chanceVirusDeath = random(0.4, 0.8);
     chanceVirusSpread = random(0.3, 0.8);
     
-    if (useDefaultSettings) {
-        setDefaultSettings();
-    }
+    // ChangeValueButton objects
+    buttons = new ArrayList<Button>();
+    buttons.add(new Button("chanceBirth", 0.25));
     
     // Debug
     onlyOneTribe = false;
@@ -60,17 +62,7 @@ void setup() {
     createInitialBoard();
 }
 
-void setDefaultSettings() {
-    // Probabilities
-    chanceBirth = 0.25;
-    chanceDeath = 0.005;
-    chanceNewTribe = 0.00001;
-    
-    // Virus probabilities
-    chanceVirus = 0.0001;
-    chanceVirusDeath = random(0.4, 0.8);
-    chanceVirusSpread = random(0.3, 0.8);
-}
+
 
 void createInitialBoard() {
     for (int i = 0; i < numStartTribes; i++) {
@@ -82,7 +74,7 @@ void createInitialBoard() {
 
 void draw() {
     updateBoard();
-    drawBoard();
+    drawEverything();
 }
 
 void updateBoard() {
@@ -115,15 +107,16 @@ void maybeNewTribe(int x, int y) {
 // Creates new tribe at (x, y)
 void createNewTribe(int x, int y) {
     color randomColor = color(random(0, 255), random(0, 255), random(0, 255));
-    tribeToColor.put(newtribeNum, randomColor);
-    board[x][y] = newtribeNum;
-    newtribeNum++;
+    tribeToColor.put(newTribeNum, randomColor);
+    board[x][y] = newTribeNum;
+    newTribeNum++;
 }
 
 // Maybe gives birth next to cell (x, y), if that cell is alive.
 void maybeBirth(int x, int y) {
     int tribeNum = board[x][y];
     if (tribeNum != 0) {
+        double chanceBirth = buttonNameToValue("chanceBirth");
         if (y > 0 && random(0, 1) < chanceBirth) {
             board[x][y-1] = tribeNum;
         }
@@ -182,17 +175,12 @@ void killAll() {
     }    
 }
 
-void drawBoard() {
-    for (int y = 0; y < w; y++) {
-        for (int x = 0; x < w; x++) {
-            if (board[x][y] == 0) { // empty
-                fill(220);
-            }
-            else {
-                fill(tribeToColor.get(board[x][y]));
-            }
-            
-            square(x * squareWidth, y * squareWidth, squareWidth);    
+
+public double buttonNameToValue(String name) {
+    for (Button button : buttons) {
+        if (button.name.equals(name)) {
+            return button.value;    
         }
     }
+    return -1;
 }
