@@ -35,7 +35,7 @@ void drawButtons() {
     
     // Draw background to buttons
     fill(200);
-    rect(0, 0, 250, buttonHeight * buttons.size());
+    rect(0, 0, 300, buttonHeight * buttons.size());
     
     // Draw buttons
     for (int y = 0; y < buttons.size(); y++) {
@@ -56,7 +56,9 @@ void drawButtons() {
         
         // Probability value
         fill(0);
-        int intPrcntValue = (int) (button.value * 100);
-        text(button.name + ": " + intPrcntValue + "%", buttonHeight * 2 + 5, ypixel);
+        double prcntValue = button.value * 100;
+        String buttonValue = String.format("%,.7f", prcntValue);
+        String toPrint = String.format(button.name + ": " + buttonValue);
+        text(toPrint + "%", buttonHeight * 2 + 5, ypixel);
     }
 }

@@ -14,12 +14,9 @@ boolean spawnNewTribes;
 int numStartTribes;
 boolean useRandomDeaths;
 int buttonHeight;
+boolean paused;
 
 // Probabilities
-double chanceBirth;
-double chanceDeath;
-double chanceNewTribe;
-double chanceVirus;
 double chanceVirusDeath;
 double chanceVirusSpread;
 
@@ -36,6 +33,7 @@ void setup() {
     board = new int[w][w];
     tribeToColor = new HashMap<Integer, Integer>();
     noStroke();
+    paused = false;
     
     // General settings
     spawnNewTribes = true;
@@ -44,17 +42,17 @@ void setup() {
     buttonHeight = 25; // also decides font size
     
     // Probabilities
-    chanceDeath = 0.005;
-    chanceNewTribe = 0.00001;
     
     // Virus probabilities
-    chanceVirus = 0.0001;
     chanceVirusDeath = random(0.4, 0.8);
     chanceVirusSpread = random(0.3, 0.8);
     
     // ChangeValueButton objects
     buttons = new ArrayList<Button>();
     buttons.add(new Button("chanceBirth", 0.25));
+    buttons.add(new Button("chanceDeath", 0.005));
+    buttons.add(new Button("chanceNewTribe", 0.00001));
+    buttons.add(new Button("chanceVirus", 0.0001));
     
     // Debug
     onlyOneTribe = false;
@@ -73,8 +71,10 @@ void createInitialBoard() {
 }
 
 void draw() {
-    updateBoard();
-    drawEverything();
+    if (!paused) {
+        updateBoard();
+        drawEverything();
+    }
 }
 
 void updateBoard() {
@@ -90,6 +90,8 @@ void updateBoard() {
 
 // Maybe creates new tribe (each tribe has a specific color)
 void maybeNewTribe(int x, int y) {
+    double chanceNewTribe = getValue("chanceNewTribe");
+    
     if (spawnNewTribes) {
         if (random(0, 1) < chanceNewTribe) {
             if (onlyOneTribe) {
@@ -116,7 +118,7 @@ void createNewTribe(int x, int y) {
 void maybeBirth(int x, int y) {
     int tribeNum = board[x][y];
     if (tribeNum != 0) {
-        double chanceBirth = buttonNameToValue("chanceBirth");
+        double chanceBirth = getValue("chanceBirth");
         if (y > 0 && random(0, 1) < chanceBirth) {
             board[x][y-1] = tribeNum;
         }
@@ -134,6 +136,7 @@ void maybeBirth(int x, int y) {
 
 // Chance of death
 void maybeDeath(int x, int y) {
+    double chanceDeath = getValue("chanceDeath");
     if (useRandomDeaths) {
         if (board[x][y] != 0 && random(0, 1) < chanceDeath) {
             board[x][y] = 0;
@@ -142,6 +145,7 @@ void maybeDeath(int x, int y) {
 }
 
 void maybeVirus(int x, int y) {
+    double chanceVirus = getValue("chanceVirus");
     int tribeNum = board[x][y];
     if (tribeNum != 0 && random(0, 1) < chanceVirus) {
         recursiveSpread(x, y, tribeNum);
@@ -176,7 +180,7 @@ void killAll() {
 }
 
 
-public double buttonNameToValue(String name) {
+public double getValue(String name) {
     for (Button button : buttons) {
         if (button.name.equals(name)) {
             return button.value;    
