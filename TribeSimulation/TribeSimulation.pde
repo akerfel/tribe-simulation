@@ -1,4 +1,4 @@
-// Instructions:
+// Instructions.
 // Edit the settings and probabilities to your liking.
 // Press space to kill all cells.
 
@@ -15,6 +15,7 @@ int numStartTribes;
 boolean useRandomDeaths;
 
 // Probabilities
+boolean useDefaultSettings;
 double chanceBirth;
 double chanceDeath;
 double chanceNewTribe;
@@ -39,17 +40,36 @@ void setup() {
     useRandomDeaths = false;
     
     // Probabilities
+    useDefaultSettings = true; // IMPORTANT SETTING - will override all probabilities
     chanceBirth = 0.25;
     chanceDeath = 0.005;
     chanceNewTribe = 0.00001;
+    
+    // Virus probabilities
     chanceVirus = 0.0001;
     chanceVirusDeath = random(0.4, 0.8);
     chanceVirusSpread = random(0.3, 0.8);
+    
+    if (useDefaultSettings) {
+        setDefaultSettings();
+    }
     
     // Debug
     onlyOneTribe = false;
     
     createInitialBoard();
+}
+
+void setDefaultSettings() {
+    // Probabilities
+    chanceBirth = 0.25;
+    chanceDeath = 0.005;
+    chanceNewTribe = 0.00001;
+    
+    // Virus probabilities
+    chanceVirus = 0.0001;
+    chanceVirusDeath = random(0.4, 0.8);
+    chanceVirusSpread = random(0.3, 0.8);
 }
 
 void createInitialBoard() {
