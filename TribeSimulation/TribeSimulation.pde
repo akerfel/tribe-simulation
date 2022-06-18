@@ -10,9 +10,9 @@ HashMap<Integer, Integer> tribeToColor;
 int newTribeNum = 0;
 
 // General settings
+boolean useRandomDeaths;
 boolean spawnNewTribes;
 int numStartTribes;
-boolean useRandomDeaths;
 int buttonHeight;
 boolean paused;
 
@@ -36,10 +36,11 @@ void setup() {
     paused = false;
     
     // General settings
+    useRandomDeaths = true;
     spawnNewTribes = true;
     numStartTribes = 8;
-    useRandomDeaths = false;
     buttonHeight = 25; // also decides font size
+   
     
     // Probabilities
     
@@ -71,9 +72,16 @@ void createInitialBoard() {
 }
 
 void draw() {
+    updateButtonValues();
     if (!paused) {
         updateBoard();
-        drawEverything();
+    }
+    drawEverything();
+}
+
+void updateButtonValues() {
+    for (Button button : buttons) {
+        button.updateValue();    
     }
 }
 
