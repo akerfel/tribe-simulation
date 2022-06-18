@@ -13,8 +13,8 @@ boolean useRandomDeaths;
 boolean onlyOneTribe;
 
 void setup() {
-    size(900, 900);    
-    w = 100;
+    size(1600, 1200);    
+    w = 500;
     squareWidth = width/w;
     board = new int[w][w];
     tribeToColor = new HashMap<Integer, Integer>();
@@ -126,7 +126,6 @@ void randomVirus() {
 }
 
 void recursiveSpread(int x, int y, int tribeNum) {
-    println("x: " + x);
     double chanceVirusDeath = random(0.4, 0.8);
     double chanceVirusSpread = random(0.3, 0.8);
     if (x < 0 || x > w - 1 || y < 0 || y > w - 1 || board[x][y] != tribeNum) {
