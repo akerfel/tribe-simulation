@@ -4,10 +4,18 @@ int board[][];
 HashMap<Integer, Integer> tribeToColor;
 int newtribeNum = 0;
 
-// Settings
+// General settings
 boolean spawnNewTribes;
 int numStartTribes;
 boolean useRandomDeaths;
+
+// Probabilities
+double chanceBirth;
+double chanceDeath;
+double chanceNewTribe;
+double chanceVirus;
+double chanceVirusDeath;
+double chanceVirusSpread;
 
 // Debug
 boolean onlyOneTribe;
@@ -20,10 +28,18 @@ void setup() {
     tribeToColor = new HashMap<Integer, Integer>();
     noStroke();
     
-    // Settings
+    // General settings
     spawnNewTribes = true;
     numStartTribes = 8;
     useRandomDeaths = false;
+    
+    // Probabilities
+    chanceBirth = 0.25;
+    chanceDeath = 0.005;
+    chanceNewTribe = 0.00001;
+    chanceVirus = 0.0001;
+    chanceVirusDeath = random(0.4, 0.8);
+    chanceVirusSpread = random(0.3, 0.8);
     
     // Debug
     onlyOneTribe = false;
@@ -45,30 +61,33 @@ void draw() {
 }
 
 void updateBoard() {
-    if (spawnNewTribes) randomNewTribes();
-    randomBirths();
-    if (useRandomDeaths) randomDeaths();
-    randomVirus();
-}
-
-// Create new tribe (each tribe has a specific color)
-void randomNewTribes() {
-    double chanceNewTribe = 0.00001;
     for (int y = 0; y < w; y++) {
         for (int x = 0; x < w; x++) {
-            if (random(0, 1) < chanceNewTribe) {
-                if (onlyOneTribe) {
-                    tribeToColor.put(1, color(0, 0, 255));
-                    board[x][y] = 1;
-                }
-                else {
-                    createNewTribe(x, y);
-                }
-            }
+            maybeNewTribe(x, y);
+            maybeBirth(x, y);
+            maybeDeath(x, y);
+            maybeVirus(x, y);
         }
-    }     
+    }    
 }
 
+// Maybe creates new tribe (each tribe has a specific color)
+void maybeNewTribe(int x, int y) {
+    if (spawnNewTribes) {
+        if (random(0, 1) < chanceNewTribe) {
+            if (onlyOneTribe) {
+                tribeToColor.put(1, color(0, 0, 255));
+                board[x][y] = 1;
+            }
+            else {
+                createNewTribe(x, y);
+            }
+        }
+    }
+}
+
+
+// Creates new tribe at (x, y)
 void createNewTribe(int x, int y) {
     color randomColor = color(random(0, 255), random(0, 255), random(0, 255));
     tribeToColor.put(newtribeNum, randomColor);
@@ -76,58 +95,42 @@ void createNewTribe(int x, int y) {
     newtribeNum++;
 }
 
-// Chance of a new birth within a tribe (only happens next to tribe member)
-void randomBirths() {
-    double chanceBirth = 0.25;
-    for (int y = 0; y < w; y++) {
-        for (int x = 0; x < w; x++) {
-            int tribeNum = board[x][y];
-            if (tribeNum != 0) {
-                if (y > 0 && random(0, 1) < chanceBirth) {
-                    board[x][y-1] = tribeNum;
-                }
-                if (y < w - 1 && random(0, 1) < chanceBirth) {
-                    board[x][y+1] = tribeNum;
-                }
-                if (x > 0 && random(0, 1) < chanceBirth) {
-                    board[x-1][y] = tribeNum;
-                }
-                if (x < w - 1 && random(0, 1) < chanceBirth) {
-                    board[x+1][y] = tribeNum;
-                }
-            }
-            
+// Maybe gives birth next to cell (x, y), if that cell is alive.
+void maybeBirth(int x, int y) {
+    int tribeNum = board[x][y];
+    if (tribeNum != 0) {
+        if (y > 0 && random(0, 1) < chanceBirth) {
+            board[x][y-1] = tribeNum;
+        }
+        if (y < w - 1 && random(0, 1) < chanceBirth) {
+            board[x][y+1] = tribeNum;
+        }
+        if (x > 0 && random(0, 1) < chanceBirth) {
+            board[x-1][y] = tribeNum;
+        }
+        if (x < w - 1 && random(0, 1) < chanceBirth) {
+            board[x+1][y] = tribeNum;
         }
     }    
 }
 
-// Chance of death for all non-dead cells
-void randomDeaths() {
-    double chanceDeath = 0.005;
-    for (int y = 0; y < w; y++) {
-        for (int x = 0; x < w; x++) {
-            if (board[x][y] != 0 && random(0, 1) < chanceDeath) {
-                board[x][y] = 0;
-            }
+// Chance of death
+void maybeDeath(int x, int y) {
+    if (useRandomDeaths) {
+        if (board[x][y] != 0 && random(0, 1) < chanceDeath) {
+            board[x][y] = 0;
         }
-    } 
+    }
 }
 
-void randomVirus() {
-    double chanceVirus = 0.0001;
-    for (int y = 0; y < w; y++) {
-        for (int x = 0; x < w; x++) {
-            int tribeNum = board[x][y];
-            if (tribeNum != 0 && random(0, 1) < chanceVirus) {
-                recursiveSpread(x, y, tribeNum);
-            }
-        }
-    }    
+void maybeVirus(int x, int y) {
+    int tribeNum = board[x][y];
+    if (tribeNum != 0 && random(0, 1) < chanceVirus) {
+        recursiveSpread(x, y, tribeNum);
+    }
 }
 
 void recursiveSpread(int x, int y, int tribeNum) {
-    double chanceVirusDeath = random(0.4, 0.8);
-    double chanceVirusSpread = random(0.3, 0.8);
     if (x < 0 || x > w - 1 || y < 0 || y > w - 1 || board[x][y] != tribeNum) {
         return;    
     }
