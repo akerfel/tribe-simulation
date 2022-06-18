@@ -1,3 +1,8 @@
+// Instructions:
+// Edit the settings and probabilities to your liking.
+// Press space to kill all cells.
+
+
 int squareWidth;
 int w;
 int board[][];
@@ -147,6 +152,14 @@ void recursiveSpread(int x, int y, int tribeNum) {
         if (random(0, 1) < chanceVirusSpread) recursiveSpread(x+1, y-1, tribeNum);
         
     }
+}
+
+void killAll() {
+    for (int y = 0; y < w; y++) {
+        for (int x = 0; x < w; x++) {
+            board[x][y] = 0;
+        }
+    }    
 }
 
 void drawBoard() {
