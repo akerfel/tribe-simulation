@@ -22,8 +22,8 @@ void setup() {
     
     // Settings
     spawnNewTribes = true;
-    numStartTribes = 0;
-    useRandomDeaths = true;
+    numStartTribes = 8;
+    useRandomDeaths = false;
     
     // Debug
     onlyOneTribe = false;
@@ -78,7 +78,7 @@ void createNewTribe(int x, int y) {
 
 // Chance of a new birth within a tribe (only happens next to tribe member)
 void randomBirths() {
-    double chanceBirth = 0.05;
+    double chanceBirth = 0.25;
     for (int y = 0; y < w; y++) {
         for (int x = 0; x < w; x++) {
             int tribeNum = board[x][y];
