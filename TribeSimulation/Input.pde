@@ -1,12 +1,12 @@
 void keyPressed() {
     if (key == ' ') {
-        paused = !paused;    
+        paused = !paused;
     }
-    
+
     if (key == 'x') {
         boolean wasPaused = paused;
         paused = false;
-        killAll();  
+        killAll();
         draw();
         paused = wasPaused;
     }
@@ -15,7 +15,7 @@ void keyPressed() {
 void mousePressed() {
     for (int y = 0; y < buttons.size(); y++) {
         Button button = buttons.get(y);
-        
+
         if (mouseY >= y * buttonHeight && mouseY <= (y + 1) * buttonHeight) {
             if (mouseX >= 0 && mouseX <= buttonHeight) {
                 if (mouseButton == LEFT) button.isDecreasing = true;
