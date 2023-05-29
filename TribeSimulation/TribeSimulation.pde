@@ -57,7 +57,7 @@ void setup() {
     createInitialBoard();
 }
 
-// This function is
+// This function is called 60 times per second.
 void draw() {
     updateButtonValues();
     if (!paused) {
